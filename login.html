@@ -147,28 +147,31 @@
             }
 
             try {
-                // 这里应该调用后端API发送验证码
-                // const response = await fetch('/api/send-sms', {
-                //     method: 'POST',
-                //     headers: { 'Content-Type': 'application/json' },
-                //     body: JSON.stringify({ phone })
-                // });
+                const response = await fetch('http://localhost:3000/api/sms/send-code', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ phone })
+                });
                 
-                // 模拟发送验证码
-                alert('验证码已发送');
-                
-                // 开始倒计时
-                sendSmsBtn.disabled = true;
-                timer = setInterval(() => {
-                    sendSmsBtn.textContent = `${countdown}秒后重试`;
-                    countdown--;
-                    if (countdown < 0) {
-                        clearInterval(timer);
-                        sendSmsBtn.disabled = false;
-                        sendSmsBtn.textContent = '发送验证码';
-                        countdown = 60;
-                    }
-                }, 1000);
+                const data = await response.json();
+                if (data.success) {
+                    alert('验证码已发送');
+                    
+                    // 开始倒计时
+                    sendSmsBtn.disabled = true;
+                    timer = setInterval(() => {
+                        sendSmsBtn.textContent = `${countdown}秒后重试`;
+                        countdown--;
+                        if (countdown < 0) {
+                            clearInterval(timer);
+                            sendSmsBtn.disabled = false;
+                            sendSmsBtn.textContent = '发送验证码';
+                            countdown = 60;
+                        }
+                    }, 1000);
+                } else {
+                    alert(data.message || '发送验证码失败，请重试');
+                }
             } catch (error) {
                 alert('发送验证码失败，请重试');
             }
@@ -188,18 +191,21 @@
             }
 
             try {
-                // 这里应该调用后端API进行注册
-                // const response = await fetch('/api/register', {
-                //     method: 'POST',
-                //     headers: { 'Content-Type': 'application/json' },
-                //     body: JSON.stringify({ phone, smsCode, password })
-                // });
+                const response = await fetch('http://localhost:3000/api/auth/register', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ phone, smsCode, password })
+                });
                 
-                // 模拟注册成功
-                alert('注册成功！');
-                // 切换到登录页面
-                document.getElementById('registerContainer').style.display = 'none';
-                document.querySelector('.auth-container').style.display = 'block';
+                const data = await response.json();
+                if (response.ok) {
+                    alert('注册成功！');
+                    // 切换到登录页面
+                    document.getElementById('registerContainer').style.display = 'none';
+                    document.querySelector('.auth-container').style.display = 'block';
+                } else {
+                    alert(data.message || '注册失败，请重试');
+                }
             } catch (error) {
                 alert('注册失败，请重试');
             }
@@ -212,21 +218,25 @@
             const password = document.getElementById('password').value;
 
             try {
-                // 这里应该调用后端API进行登录
-                // const response = await fetch('/api/login', {
-                //     method: 'POST',
-                //     headers: { 'Content-Type': 'application/json' },
-                //     body: JSON.stringify({ phone, password })
-                // });
+                const response = await fetch('http://localhost:3000/api/auth/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ phone, password })
+                });
                 
-                // 模拟登录成功
-                localStorage.setItem('isLoggedIn', 'true');
-                localStorage.setItem('userPhone', phone);
-                alert('登录成功！');
-                // 跳转到游戏页面
-                window.location.href = 'index.html';
+                const data = await response.json();
+                if (response.ok) {
+                    localStorage.setItem('isLoggedIn', 'true');
+                    localStorage.setItem('userPhone', phone);
+                    localStorage.setItem('token', data.token);
+                    alert('登录成功！');
+                    // 跳转到游戏页面
+                    window.location.href = 'index.html';
+                } else {
+                    alert(data.message || '登录失败，请检查手机号和密码');
+                }
             } catch (error) {
-                alert('登录失败，请检查手机号和密码');
+                alert('登录失败，请重试');
             }
         });
     </script>
