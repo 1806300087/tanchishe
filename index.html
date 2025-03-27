@@ -5,14 +5,63 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>贪吃蛇游戏</title>
     <link rel="stylesheet" href="style.css">
+    <style>
+        .user-info {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .logout-btn {
+            padding: 5px 10px;
+            background: #ff4444;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .logout-btn:hover {
+            background: #cc0000;
+        }
+    </style>
 </head>
 <body>
     <div class="game-container">
+        <div class="user-info">
+            <span id="userPhone"></span>
+            <button class="logout-btn" id="logoutBtn">退出登录</button>
+        </div>
         <h1>贪吃蛇游戏</h1>
         <canvas id="gameCanvas" width="400" height="400"></canvas>
         <div class="score">分数: <span id="score">0</span></div>
         <button id="startBtn">开始游戏</button>
     </div>
+    <script>
+        // 检查登录状态
+        function checkLogin() {
+            const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
+            const userPhone = localStorage.getItem('userPhone');
+            
+            if (!isLoggedIn || !userPhone) {
+                window.location.href = 'login.html';
+                return;
+            }
+            
+            document.getElementById('userPhone').textContent = userPhone;
+        }
+
+        // 退出登录
+        document.getElementById('logoutBtn').addEventListener('click', () => {
+            localStorage.removeItem('isLoggedIn');
+            localStorage.removeItem('userPhone');
+            window.location.href = 'login.html';
+        });
+
+        // 页面加载时检查登录状态
+        checkLogin();
+    </script>
     <script src="game.js"></script>
 </body>
 </html> 

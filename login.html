@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>贪吃蛇游戏 - 登录</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .auth-container {
+            max-width: 400px;
+            margin: 50px auto;
+            padding: 20px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        .auth-form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+        .form-group label {
+            font-weight: bold;
+        }
+        .form-group input {
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        .auth-btn {
+            padding: 10px;
+            background: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .auth-btn:hover {
+            background: #45a049;
+        }
+        .switch-form {
+            text-align: center;
+            margin-top: 15px;
+        }
+        .switch-form a {
+            color: #4CAF50;
+            text-decoration: none;
+        }
+        .sms-group {
+            display: flex;
+            gap: 10px;
+        }
+        .sms-group input {
+            flex: 1;
+        }
+        .sms-group button {
+            padding: 8px 15px;
+            background: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .sms-group button:disabled {
+            background: #cccccc;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body>
+    <div class="auth-container">
+        <h2>登录</h2>
+        <form id="loginForm" class="auth-form">
+            <div class="form-group">
+                <label for="phone">手机号</label>
+                <input type="tel" id="phone" required pattern="[0-9]{11}">
+            </div>
+            <div class="form-group">
+                <label for="password">密码</label>
+                <input type="password" id="password" required>
+            </div>
+            <button type="submit" class="auth-btn">登录</button>
+        </form>
+        <div class="switch-form">
+            <a href="#" id="showRegister">没有账号？立即注册</a>
+        </div>
+    </div>
+
+    <div class="auth-container" id="registerContainer" style="display: none;">
+        <h2>注册</h2>
+        <form id="registerForm" class="auth-form">
+            <div class="form-group">
+                <label for="regPhone">手机号</label>
+                <input type="tel" id="regPhone" required pattern="[0-9]{11}">
+            </div>
+            <div class="form-group">
+                <label for="smsCode">验证码</label>
+                <div class="sms-group">
+                    <input type="text" id="smsCode" required pattern="[0-9]{6}">
+                    <button type="button" id="sendSmsBtn">发送验证码</button>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="regPassword">密码</label>
+                <input type="password" id="regPassword" required>
+            </div>
+            <div class="form-group">
+                <label for="confirmPassword">确认密码</label>
+                <input type="password" id="confirmPassword" required>
+            </div>
+            <button type="submit" class="auth-btn">注册</button>
+        </form>
+        <div class="switch-form">
+            <a href="#" id="showLogin">已有账号？立即登录</a>
+        </div>
+    </div>
+
+    <script>
+        // 切换登录和注册表单
+        document.getElementById('showRegister').addEventListener('click', (e) => {
+            e.preventDefault();
+            document.querySelector('.auth-container').style.display = 'none';
+            document.getElementById('registerContainer').style.display = 'block';
+        });
+
+        document.getElementById('showLogin').addEventListener('click', (e) => {
+            e.preventDefault();
+            document.getElementById('registerContainer').style.display = 'none';
+            document.querySelector('.auth-container').style.display = 'block';
+        });
+
+        // 发送验证码
+        const sendSmsBtn = document.getElementById('sendSmsBtn');
+        let countdown = 60;
+        let timer = null;
+
+        sendSmsBtn.addEventListener('click', async () => {
+            const phone = document.getElementById('regPhone').value;
+            if (!/^1[3-9]\d{9}$/.test(phone)) {
+                alert('请输入正确的手机号');
+                return;
+            }
+
+            try {
+                // 这里应该调用后端API发送验证码
+                // const response = await fetch('/api/send-sms', {
+                //     method: 'POST',
+                //     headers: { 'Content-Type': 'application/json' },
+                //     body: JSON.stringify({ phone })
+                // });
+                
+                // 模拟发送验证码
+                alert('验证码已发送');
+                
+                // 开始倒计时
+                sendSmsBtn.disabled = true;
+                timer = setInterval(() => {
+                    sendSmsBtn.textContent = `${countdown}秒后重试`;
+                    countdown--;
+                    if (countdown < 0) {
+                        clearInterval(timer);
+                        sendSmsBtn.disabled = false;
+                        sendSmsBtn.textContent = '发送验证码';
+                        countdown = 60;
+                    }
+                }, 1000);
+            } catch (error) {
+                alert('发送验证码失败，请重试');
+            }
+        });
+
+        // 注册表单提交
+        document.getElementById('registerForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const phone = document.getElementById('regPhone').value;
+            const smsCode = document.getElementById('smsCode').value;
+            const password = document.getElementById('regPassword').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+
+            if (password !== confirmPassword) {
+                alert('两次输入的密码不一致');
+                return;
+            }
+
+            try {
+                // 这里应该调用后端API进行注册
+                // const response = await fetch('/api/register', {
+                //     method: 'POST',
+                //     headers: { 'Content-Type': 'application/json' },
+                //     body: JSON.stringify({ phone, smsCode, password })
+                // });
+                
+                // 模拟注册成功
+                alert('注册成功！');
+                // 切换到登录页面
+                document.getElementById('registerContainer').style.display = 'none';
+                document.querySelector('.auth-container').style.display = 'block';
+            } catch (error) {
+                alert('注册失败，请重试');
+            }
+        });
+
+        // 登录表单提交
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const phone = document.getElementById('phone').value;
+            const password = document.getElementById('password').value;
+
+            try {
+                // 这里应该调用后端API进行登录
+                // const response = await fetch('/api/login', {
+                //     method: 'POST',
+                //     headers: { 'Content-Type': 'application/json' },
+                //     body: JSON.stringify({ phone, password })
+                // });
+                
+                // 模拟登录成功
+                localStorage.setItem('isLoggedIn', 'true');
+                localStorage.setItem('userPhone', phone);
+                alert('登录成功！');
+                // 跳转到游戏页面
+                window.location.href = 'index.html';
+            } catch (error) {
+                alert('登录失败，请检查手机号和密码');
+            }
+        });
+    </script>
+</body>
+</html> 
